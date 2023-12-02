@@ -10,4 +10,4 @@ DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
 PEP_801_STATUS = 'Informational, Active'
 
 # Без этой константы не проходят тесты
-EXPECTED_STATUS = None
+EXPECTED_STATUS = dict()
