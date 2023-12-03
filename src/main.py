@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import re
 from urllib.parse import urljoin
@@ -8,6 +9,7 @@ from tqdm import tqdm
 
 from configs import configure_argument_parser, configure_logging
 from constants import BASE_DIR, MAIN_DOC_URL, PEP_801_STATUS, PEP_DOC_URL
+from exceptions import VersionsNotFoundException
 from outputs import control_output
 from utils import find_tag, get_response
 
@@ -59,7 +61,7 @@ def latest_versions(session: CachedSession) -> list:
             a_tags = ul.find_all('a')
             break
     else:
-        raise Exception('Ничего не нашлось')
+        raise VersionsNotFoundException('Ничего не нашлось')
 
     results = [('Ссылка на документацию', 'Версия', 'Статус')]
     pattern = r'Python (?P<version>\d\.\d+) \((?P<status>.*)\)'
@@ -110,7 +112,6 @@ def download(session: CachedSession) -> None:
     logging.info(f'Архив был загружен и сохранён: {archive_path}')
 
 
-# Four following are `helper funcs`
 def parse_tables(session: CachedSession) -> list:
     """Helper func. Parses all PEPs and returns their link & status."""
     response = get_response(session, PEP_DOC_URL)
@@ -159,7 +160,7 @@ def check_status(session: CachedSession, peps: list) -> list:
     logging.info('Несовпадающие статусы...')
 
     # Сравниваем код на главной странице с кодом на личной странице PEP`а
-    for pep_link, status_main in peps:
+    for pep_link, status_main in tqdm(peps):
         # Завариваем супчик...)
         response = get_response(session, pep_link)
         if response is None:
@@ -201,19 +202,8 @@ def table_data_counter(pep_status_list: list) -> list:
          'April Fool!', 'TOTAL')
     ]
 
-    pep_status_dict = {
-        'Active': 0,
-        'Accepted': 0,
-        'Final': 0,
-        'Provisional': 0,
-        'Draft': 0,
-        'Superseded': 0,
-        'Deferred': 0,
-        'Withdrawn': 0,
-        'Rejected': 0,
-        'April Fool!': 0,
-        'TOTAL': 0
-    }
+    pep_status_dict = defaultdict(int)
+
     for status in pep_status_list:
         pep_status_dict[status] += 1
 
