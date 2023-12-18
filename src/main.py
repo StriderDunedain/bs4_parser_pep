@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter
 import logging
 import re
 from urllib.parse import urljoin
@@ -195,23 +195,15 @@ def table_data_counter(pep_status_list: list) -> list:
     Helper func. Counts the number of each status
     and prepares data for a table.
     """
-    table_list = [
-        ('Active', 'Accepted', 'Final',
-         'Provisional', 'Draft', 'Superseded',
-         'Deferred', 'Withdrawn', 'Rejected',
-         'April Fool!', 'TOTAL')
-    ]
 
-    pep_status_dict = defaultdict(int)
-
-    for status in pep_status_list:
-        pep_status_dict[status] += 1
+    pep_status_dict = Counter(pep_status_list)
 
     pep_status_dict['TOTAL'] += sum(pep_status_dict.values())
 
-    table_list.append(
-        [count for count in pep_status_dict.values()]
-    )
+    table_list = [
+        tuple(pep_status_dict.keys()),
+        tuple(pep_status_dict.values())
+    ]
 
     return table_list
 
