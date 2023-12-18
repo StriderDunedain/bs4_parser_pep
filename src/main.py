@@ -190,22 +190,16 @@ def check_status(session: CachedSession, peps: list) -> list:
     return pep_status_list
 
 
-def table_data_counter(pep_status_list: list) -> list:
+def table_data_counter(pep_status_list: list) -> Counter:
     """
     Helper func. Counts the number of each status
     and prepares data for a table.
     """
-
     pep_status_dict = Counter(pep_status_list)
 
     pep_status_dict['TOTAL'] += sum(pep_status_dict.values())
 
-    table_list = [
-        tuple(pep_status_dict.keys()),
-        tuple(pep_status_dict.values())
-    ]
-
-    return table_list
+    return pep_status_dict
 
 
 def pep(session: CachedSession) -> list:

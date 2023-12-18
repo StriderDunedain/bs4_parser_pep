@@ -49,13 +49,13 @@ def default_output(results):
         print(*row)
 
 
-def pretty_output(results):
+def pretty_output(results: dict):
     """Creates a table using data from main.py."""
     # Инициализируем объект PrettyTable.
     table = PrettyTable()
     # В качестве заголовков устанавливаем первый элемент списка.
-    table.field_names = results[0]
-    # Добавляем все строки, начиная со второй (с индексом 1).
-    table.add_rows(results[1:])
+    table.field_names = results.keys()
+    # Добавляем строки.
+    table.add_rows([tuple(results.values())])
     # Печатаем таблицу.
     print(table)
